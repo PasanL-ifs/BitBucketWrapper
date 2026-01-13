@@ -20,16 +20,6 @@ A beautiful year-in-review application that analyzes your Git commit history and
 - 🤝 Collaboration insights
 - 📁 Most active repositories
 
-### Beautiful Visualizations
-- 🎨 Animated slideshow presentation (like Spotify Wrapped)
-- 📊 Interactive charts and heatmaps
-- 🌙 Stunning dark theme with gradient accents
-- 📱 Responsive design
-
-### Export & Share
-- 📥 Download stats as PNG image
-- 🔗 Share summary card
-
 ## 🚀 Getting Started
 
 ### Option 1: Run Locally (Recommended)
@@ -40,7 +30,11 @@ A beautiful year-in-review application that analyzes your Git commit history and
 
 #### Installation
 
-1. **Clone or navigate to the project directory**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/PasanL-ifs/BitBucketWrapper.git
+   cd BitBucketWrapper
+   ```
 
 2. **Install all dependencies**
    ```bash
@@ -55,25 +49,43 @@ A beautiful year-in-review application that analyzes your Git commit history and
 4. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-### Option 2: Use GitHub Pages (Hosted Version)
+### Option 2: Use Hosted Version with Exported Data
 
-The hosted version requires you to export your Git data first using our CLI tool.
+The hosted version requires you to export your Git data first using the CLI tool.
 
-#### Step 1: Install the CLI Tool
+#### Step 1: Download the CLI Tool
 
-```bash
-cd cli
-npm install
-```
+**Windows Users (Easiest):**
+- Download the pre-built executable from the [Releases Page](https://github.com/PasanL-ifs/BitBucketWrapper/releases)
+- Choose `git-wrapped-export-windows-amd64.exe` for 64-bit Windows
+- No installation required - just download and run!
+
+**Other Options:**
+- **Node.js Version:** Requires Node.js 18+ (see [CLI README](./cli/README.md))
+- **Python Version:** Requires Python 3.7+ (see [CLI README](./cli/README.md))
+- **Go Version:** Build from source (see [CLI README](./cli/README.md))
 
 #### Step 2: Export Your Git Data
 
-```bash
-# From the cli directory
-node bin/git-wrapped-export.js --path "C:\Users\pakulk\Workspace" --output wrapped-data.json
+**Using Windows Executable:**
+```cmd
+git-wrapped-export-windows-amd64.exe --path "C:\Users\YourName\Workspace" --output wrapped-data.json
 
-# Or with year filter
-node bin/git-wrapped-export.js --path "C:\Users\pakulk\Workspace" --year 2025 --output wrapped-2025.json
+# Filter by year
+git-wrapped-export-windows-amd64.exe --path "C:\Users\YourName\Workspace" --year 2025 --output wrapped-2025.json
+```
+
+**Using Node.js:**
+```bash
+cd cli/nodejs
+npm install
+node bin/git-wrapped-export.js --path "C:\Users\YourName\Workspace" --output wrapped-data.json
+```
+
+**Using Python:**
+```bash
+cd cli/python
+python git_wrapped_export.py --path "C:\Users\YourName\Workspace" --output wrapped-data.json
 ```
 
 #### Step 3: Upload to Hosted Version
@@ -88,16 +100,20 @@ node bin/git-wrapped-export.js --path "C:\Users\pakulk\Workspace" --year 2025 --
 ### Local Mode
 
 1. **Select Time Range** - Choose a year or "All Time" for lifetime stats
-2. **Enter Workspace Path** - Enter your projects folder path (e.g., `C:\Users\pakulk\Workspace`)
-3. **Select Repositories** - Check/uncheck the repos you want to include
-4. **Choose Developer** - Select a team member from the discovered authors
-5. **Generate Wrapped** - Watch the animated presentation!
+2. **Choose Data Source** - Select "Local Folder" to scan repositories directly
+3. **Enter Workspace Path** - Enter your projects folder path (e.g., `C:\Users\YourName\Workspace`)
+4. **Select Repositories** - Check/uncheck the repos you want to include
+5. **Choose Developer** - Select a team member from the discovered authors
+6. **Generate Wrapped** - Watch the animated presentation!
 
-### Hosted Mode (GitHub Pages)
+### Hosted Mode (Upload File)
 
-1. **Export Data** - Run the CLI tool on your local machine
-2. **Upload JSON** - Upload the exported file to the web app
-3. **View Stats** - All processing happens in your browser
+1. **Export Data** - Download and run the CLI tool on your local machine (see Getting Started)
+2. **Select Time Range** - Choose a year or "All Time"
+3. **Choose Data Source** - Select "Upload File"
+4. **Upload JSON** - Upload the exported `wrapped-data.json` file
+5. **Choose Developer** - Select a team member
+6. **Generate Wrapped** - View your stats! All processing happens in your browser
 
 ## 🛠️ Tech Stack
 
@@ -114,13 +130,10 @@ node bin/git-wrapped-export.js --path "C:\Users\pakulk\Workspace" --year 2025 --
 ## 📁 Project Structure
 
 ```
-git-wrapped/
+BitBucketWrapper/
 ├── client/                    # React frontend
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── Wrapped/       # Slideshow slides
-│   │   │   ├── Charts/        # Visualization components
-│   │   │   └── UI/            # Reusable UI elements
+│   │   ├── components/        # UI components
 │   │   ├── pages/             # Page components
 │   │   ├── context/           # React context
 │   │   └── utils/             # Utility functions
@@ -130,18 +143,19 @@ git-wrapped/
 │   │   ├── routes/            # API endpoints
 │   │   └── services/          # Business logic
 │   └── package.json
-├── cli/                       # CLI export tool
-│   ├── bin/
-│   │   └── git-wrapped-export.js
-│   ├── src/
-│   │   └── extractor.js
-│   └── package.json
+├── cli/                       # CLI export tools
+│   ├── go/                    # Go version (standalone executable)
+│   ├── nodejs/                # Node.js version
+│   ├── python/                # Python version
+│   └── releases/              # Pre-built binaries
 ├── config/
 │   └── authors.json           # Author email mapping
 └── package.json
 ```
 
 ## 💻 CLI Tool Reference
+
+All CLI versions (Windows .exe, Node.js, Python, Go) support the same options:
 
 ```bash
 git-wrapped-export [options]
@@ -153,10 +167,18 @@ Options:
   -h, --help             Show help message
 
 Examples:
-  git-wrapped-export --path "C:\Projects" --output my-wrapped.json
-  git-wrapped-export --path /home/user/projects --year 2025
-  git-wrapped-export  (uses current directory, all-time)
+  # Windows executable
+  git-wrapped-export-windows-amd64.exe --path "C:\Projects" --output my-wrapped.json
+  git-wrapped-export-windows-amd64.exe --path "C:\Projects" --year 2025
+  
+  # Node.js
+  node bin/git-wrapped-export.js --path "C:\Projects" --year 2025
+  
+  # Python
+  python git_wrapped_export.py --path "C:\Projects" --output my-wrapped.json
 ```
+
+For detailed CLI documentation, see [CLI README](./cli/README.md)
 
 ## 🎨 Author Mapping
 
@@ -188,12 +210,40 @@ To properly identify team members (handling multiple emails), edit `config/autho
 | 🧙 .NET Wizard | 50%+ commits in C# |
 | ☕ Java Expert | 50%+ commits in Java |
 
-## 🌐 Deploying to GitHub Pages
+## 🌐 Deploying to Production
+
+### GitHub Pages
 
 1. Fork/clone this repository
 2. Enable GitHub Pages in repository settings
 3. The GitHub Actions workflow will automatically build and deploy
 4. Update `client/vite.config.js` base path if your repo name is different
+
+### Building CLI Executables
+
+To create standalone executables for distribution:
+
+**Windows:**
+```cmd
+cd cli\go
+build.bat
+```
+
+**Linux/macOS:**
+```bash
+cd cli/go
+chmod +x build.sh
+./build.sh
+```
+
+Executables will be created in `cli/releases/` directory:
+- `git-wrapped-export-windows-amd64.exe` (Windows 64-bit)
+- `git-wrapped-export-windows-386.exe` (Windows 32-bit)
+- `git-wrapped-export-macos-amd64` (macOS Intel)
+- `git-wrapped-export-macos-arm64` (macOS Apple Silicon)
+- `git-wrapped-export-linux-amd64` (Linux 64-bit)
+
+Upload these to GitHub Releases so users can download them directly.
 
 ## 📝 API Endpoints (Local Mode)
 
@@ -206,21 +256,14 @@ To properly identify team members (handling multiple emails), edit `config/autho
 | GET | `/api/stats/team/overview` | Get team stats |
 | GET | `/api/repos` | List repositories |
 
-## 🔒 Privacy
 
-- All analysis happens locally on your machine (local mode)
-- Hosted mode processes data in your browser only
-- No data is sent to external servers
-- CLI export includes only commit metadata, not file contents
+## 🔒 Privacy & Security
 
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+- **Local Mode:** All analysis happens locally on your machine
+- **Hosted Mode:** Data processing happens entirely in your browser
+- **No External Servers:** No data is sent to external servers
+- **CLI Export:** Includes only commit metadata (no source code)
+- **Open Source:** Review the code yourself at [GitHub](https://github.com/PasanL-ifs/BitBucketWrapper)
 
 ## 📄 License
 

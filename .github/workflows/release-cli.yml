@@ -1,0 +1,116 @@
+name: Build and Release CLI Tools
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  build-go:
+    name: Build Go Binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Build all platforms
+        run: |
+          cd cli/go
+          mkdir -p ../releases
+          
+          # Windows 64-bit
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../releases/git-wrapped-export-windows-amd64.exe .
+          
+          # Windows 32-bit
+          GOOS=windows GOARCH=386 go build -ldflags="-s -w" -o ../releases/git-wrapped-export-windows-386.exe .
+          
+          # macOS Intel
+          GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o ../releases/git-wrapped-export-macos-amd64 .
+          
+          # macOS Apple Silicon
+          GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o ../releases/git-wrapped-export-macos-arm64 .
+          
+          # Linux 64-bit
+          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../releases/git-wrapped-export-linux-amd64 .
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-binaries
+          path: cli/releases/
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            cli/releases/git-wrapped-export-windows-amd64.exe
+            cli/releases/git-wrapped-export-windows-386.exe
+            cli/releases/git-wrapped-export-macos-amd64
+            cli/releases/git-wrapped-export-macos-arm64
+            cli/releases/git-wrapped-export-linux-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  package-python:
+    name: Package Python Script
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Python package
+        run: |
+          cd cli/python
+          zip -r ../releases/git-wrapped-export-python.zip git_wrapped_export.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: cli/releases/git-wrapped-export-python.zip
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: cli/releases/git-wrapped-export-python.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  package-nodejs:
+    name: Package Node.js Script
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Node.js package
+        run: |
+          cd cli
+          mkdir -p releases
+          zip -r releases/git-wrapped-export-nodejs.zip nodejs/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nodejs-package
+          path: cli/releases/git-wrapped-export-nodejs.zip
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: cli/releases/git-wrapped-export-nodejs.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

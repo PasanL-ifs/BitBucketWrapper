@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  // Base path for GitHub Pages deployment (update 'git-wrapped' to your repo name)
-  base: process.env.GITHUB_PAGES ? '/git-wrapped/' : '/',
+  // Base path for GitHub Pages deployment (matches your repo name)
+  base: process.env.GITHUB_PAGES ? '/BitBucketWrapper/' : '/',
   server: {
     port: 3000,
     proxy: {

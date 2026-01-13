@@ -300,9 +300,33 @@ export default function SetupPage() {
                         onChange={handleFileUpload}
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-4 text-center">
-                      Use the <code className="bg-white/10 px-2 py-1 rounded">git-wrapped-export</code> CLI tool to generate this file
-                    </p>
+                    <div className="mt-4 p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+                      <p className="text-xs text-gray-400 mb-2 text-center">
+                        Use the <code className="bg-white/10 px-2 py-1 rounded text-purple-300">git-wrapped-export</code> CLI tool to generate this file
+                      </p>
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-3">
+                        <a
+                          href="https://github.com/PasanL-ifs/BitBucketWrapper/releases"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-purple-400 hover:text-purple-300 underline flex items-center gap-1"
+                        >
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                          Download CLI Tool (Windows .exe)
+                        </a>
+                        <span className="text-gray-600 hidden sm:inline">|</span>
+                        <a
+                          href="https://github.com/PasanL-ifs/BitBucketWrapper/blob/main/cli/README.md"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-gray-400 hover:text-gray-300 underline"
+                        >
+                          Other versions (Node.js, Python)
+                        </a>
+                      </div>
+                    </div>
                   </div>
 
                   {error && (

@@ -20,17 +20,30 @@ export function DataProvider({ children }) {
     try {
       const response = await fetch(`/api/scan/discover?path=${encodeURIComponent(path)}`)
       
+      // Try to parse JSON, with better error handling
+      let data
+      try {
+        const text = await response.text()
+        if (!text) {
+          throw new Error('Server returned empty response. Try restarting the server.')
+        }
+        data = JSON.parse(text)
+      } catch (parseError) {
+        throw new Error(`Server connection error. Make sure the backend is running on port 3001.`)
+      }
+      
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || 'Failed to discover repositories')
       }
       
-      const data = await response.json()
       setDiscoveredRepos(data.repos || [])
       return data.repos || []
     } catch (err) {
-      setError(err.message)
-      throw err
+      const errorMessage = err.name === 'TypeError' 
+        ? 'Cannot connect to server. Make sure the backend is running.'
+        : err.message
+      setError(errorMessage)
+      throw new Error(errorMessage)
     } finally {
       setIsDiscovering(false)
     }
@@ -52,19 +65,32 @@ export function DataProvider({ children }) {
         body: JSON.stringify(body)
       })
       
+      // Try to parse JSON, with better error handling
+      let data
+      try {
+        const text = await response.text()
+        if (!text) {
+          throw new Error('Server returned empty response. The scan may have been too large.')
+        }
+        data = JSON.parse(text)
+      } catch (parseError) {
+        throw new Error(`Server error during scan. Try scanning fewer repositories or a smaller time range.`)
+      }
+      
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || 'Failed to scan repositories')
       }
       
-      const data = await response.json()
       setScanData(data)
       setAuthors(data.authors || [])
       setSelectedYear(year)
       return data
     } catch (err) {
-      setError(err.message)
-      throw err
+      const errorMessage = err.name === 'TypeError' 
+        ? 'Cannot connect to server. Make sure the backend is running.'
+        : err.message
+      setError(errorMessage)
+      throw new Error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -120,15 +146,29 @@ export function DataProvider({ children }) {
     try {
       const response = await fetch(`/api/stats/${encodeURIComponent(email)}`)
       
+      // Try to parse JSON, with better error handling
+      let data
+      try {
+        const text = await response.text()
+        if (!text) {
+          throw new Error('Server returned empty response')
+        }
+        data = JSON.parse(text)
+      } catch (parseError) {
+        throw new Error('Server connection error. Make sure the backend is running.')
+      }
+      
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || 'Failed to fetch stats')
       }
       
-      return await response.json()
+      return data
     } catch (err) {
-      setError(err.message)
-      throw err
+      const errorMessage = err.name === 'TypeError' 
+        ? 'Cannot connect to server. Make sure the backend is running.'
+        : err.message
+      setError(errorMessage)
+      throw new Error(errorMessage)
     }
   }, [])
 
@@ -144,15 +184,29 @@ export function DataProvider({ children }) {
     try {
       const response = await fetch('/api/stats/team/overview')
       
+      // Try to parse JSON, with better error handling
+      let data
+      try {
+        const text = await response.text()
+        if (!text) {
+          throw new Error('Server returned empty response')
+        }
+        data = JSON.parse(text)
+      } catch (parseError) {
+        throw new Error('Server connection error. Make sure the backend is running.')
+      }
+      
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || 'Failed to fetch team stats')
       }
       
-      return await response.json()
+      return data
     } catch (err) {
-      setError(err.message)
-      throw err
+      const errorMessage = err.name === 'TypeError' 
+        ? 'Cannot connect to server. Make sure the backend is running.'
+        : err.message
+      setError(errorMessage)
+      throw new Error(errorMessage)
     }
   }, [])
 
@@ -160,21 +214,35 @@ export function DataProvider({ children }) {
     // Check for stored file data first
     const storedData = sessionStorage.getItem('wrappedData')
     if (storedData) {
-      const data = JSON.parse(storedData)
-      setAuthors(data.authors || [])
-      setScanData({ hasData: true, fromFile: true, ...data })
-      setIsHostedMode(true)
-      return { hasData: true, fromFile: true }
+      try {
+        const data = JSON.parse(storedData)
+        setAuthors(data.authors || [])
+        setScanData({ hasData: true, fromFile: true, ...data })
+        setIsHostedMode(true)
+        return { hasData: true, fromFile: true }
+      } catch (e) {
+        sessionStorage.removeItem('wrappedData')
+      }
     }
     
     try {
       const response = await fetch('/api/scan/status')
-      const data = await response.json()
+      const text = await response.text()
+      if (!text) return { hasData: false }
+      
+      const data = JSON.parse(text)
       
       if (data.hasData) {
-        const authorsResponse = await fetch('/api/authors')
-        const authorsData = await authorsResponse.json()
-        setAuthors(authorsData.authors || [])
+        try {
+          const authorsResponse = await fetch('/api/authors')
+          const authorsText = await authorsResponse.text()
+          if (authorsText) {
+            const authorsData = JSON.parse(authorsText)
+            setAuthors(authorsData.authors || [])
+          }
+        } catch (e) {
+          console.error('Failed to fetch authors:', e)
+        }
         setScanData({ hasData: true, ...data })
       }
       

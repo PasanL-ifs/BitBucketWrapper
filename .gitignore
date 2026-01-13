@@ -1,8 +1,5 @@
 # Dependencies
 node_modules/
-client/node_modules/
-server/node_modules/
-cli/node_modules/
 
 # Build artifacts
 client/dist/
@@ -17,13 +14,6 @@ client/build/
 
 # Local cache and data
 server/cache/
-*.json
-!package.json
-!server/package.json
-!client/package.json
-!cli/package.json
-!client/tsconfig.json
-!client/jsconfig.json
 
 # Ignore the exported wrapped data files
 wrapped-data*.json
@@ -52,3 +42,18 @@ server/logs/
 # Debugging
 .next/
 out/
+
+# Go build artifacts and releases
+cli/go/git-wrapped-export
+cli/go/git-wrapped-export.exe
+cli/go/*.exe
+cli/releases/*.exe
+cli/releases/git-wrapped-export-*
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Package lock files (optional - uncomment if you want to ignore)
+# package-lock.json

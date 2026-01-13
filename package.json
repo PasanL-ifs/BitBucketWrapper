@@ -1,0 +1,19 @@
+{
+  "name": "git-wrapped",
+  "version": "1.0.0",
+  "description": "Git Wrapped - Year-in-Review Application for Teams",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install && cd ../cli && npm install",
+    "build": "cd client && npm run build",
+    "build:pages": "cd client && GITHUB_PAGES=true npm run build",
+    "start": "cd server && npm start",
+    "export": "cd cli && node bin/git-wrapped-export.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

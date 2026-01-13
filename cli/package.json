@@ -1,0 +1,18 @@
+{
+  "name": "git-wrapped-export",
+  "version": "1.0.0",
+  "description": "CLI tool to export Git history for Git Wrapped",
+  "type": "module",
+  "bin": {
+    "git-wrapped-export": "./bin/git-wrapped-export.js"
+  },
+  "scripts": {
+    "start": "node bin/git-wrapped-export.js"
+  },
+  "dependencies": {
+    "simple-git": "^3.22.0"
+  },
+  "keywords": ["git", "wrapped", "statistics", "export"],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "git-wrapped-server",
+  "version": "1.0.0",
+  "description": "Git Wrapped Backend Server",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "simple-git": "^3.22.0"
+  }
+}
